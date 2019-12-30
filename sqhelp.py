@@ -11,7 +11,7 @@ class Connection:
 
     def __init__(self):
         logging.info('Database.__init__()')
-        self.url = "postgres://upbjmjwiftowux:d9f71e9645f36ca61581f92aad633b8a14b574cd65a27fdcbb3d5bb12e2dd421@ec2-54-246-100-246.eu-west-1.compute.amazonaws.com:5432/df8bv9e8s26a59"
+        self.url = "postgres://xukmhlviigsmog:758a80e2860f0baf9425853a639fe431e2de568f58555682b109cbd7668e5b55@ec2-174-129-254-231.compute-1.amazonaws.com:5432/d7ferntc4ei660"
         self.parsed_url = parse.urlparse(self.url)
         self.curs = None
         self.autocommit = True
