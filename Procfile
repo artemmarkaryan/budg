@@ -1,1 +1,1 @@
-web: python front.py $PORT
+worker: python front.py $PORT
