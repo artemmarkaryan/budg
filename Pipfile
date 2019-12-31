@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+certifi = "==2019.11.28"
+chardet = "==3.0.4"
+idna = "==2.8"
+"psycopg2-binary" = "==2.8.4"
+pytelegrambotapi = "==3.6.6"
+requests = "==2.22.0"
+six = "==1.13.0"
+"urllib3" = "==1.25.7"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"
