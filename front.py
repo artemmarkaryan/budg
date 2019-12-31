@@ -10,7 +10,9 @@ texts = {
 	'menu': 'В меню',
 	'back': 'Назад',
 	'success': 'Готово ✓',
-	'default arrow': '↘️'
+	'default arrow': '↘️',
+	'income': 'Доход',
+	'expense': 'Расход'
 }
 
 def make_kb(options:list = None):
@@ -91,7 +93,7 @@ def menu(m):
 def add_operation(type_, m):
 	"""
 	:param type_: True for income, False for expense
-	:param chat_id:
+	:param m:
 	:return:
 	"""
 	categories = api.Api(m.chat.id).get_category_list(type_)
@@ -112,30 +114,31 @@ def add_operation(type_, m):
 
 	get_text(m, callback=name_cb, title='Категория:', options=categories + [texts['back']])
 
-@bot.message_handler(func=lambda m: m.text == 'Доход')
+@bot.message_handler(func=lambda m: m.text == texts['income'])
 def add_income(m):
 	add_operation(True, m)
 
-@bot.message_handler(func=lambda m: m.text == 'Расход')
+@bot.message_handler(func=lambda m: m.text == texts['expense'])
 def add_expense(m):
 	add_operation(False, m)
-
 
 def show_categories(m):
 	bot.send_message(
 		m.chat.id,
-		text='<b>Доходов:</b>\n\n'+'\n'.join(api.Api(m.chat.id).get_category_list(True)),
+		text='<b>Доходов:</b>\n\n'+
+		     '\n'.join(api.Api(m.chat.id).get_category_list(True)),
 		parse_mode='html'
 	)
 	bot.send_message(
 		m.chat.id,
-		text='<b>Расходов:</b>\n\n'+'\n'.join(api.Api(m.chat.id).get_category_list(False)),
+		text='<b>Расходов:</b>\n\n'+
+		     '\n'.join(api.Api(m.chat.id).get_category_list(False)),
 		parse_mode='html'
 	)
 	commands = {
 		'Добавить категорию': add_category,
 		'Удалить категорию': del_category,
-		'В меню': menu
+		texts['menu']: menu
 	}
 	kb = make_kb(list(commands.keys()))
 
@@ -143,9 +146,8 @@ def show_categories(m):
 		# call method from commands, else: call menu
 		commands.get(m.text, menu)(m)
 
-	bot.send_message(m.chat.id, '->', reply_markup=kb)
+	bot.send_message(m.chat.id, texts['default arrow'], reply_markup=kb)
 	bot.register_next_step_handler(m, handler)
-
 
 def add_category(m):
 	types_to_choose = {
@@ -189,16 +191,15 @@ def del_category(m):
 	category_list = []
 
 	def cat_name_cb(m, user_choice):
-		if user_choice in category_list:
+		if user_choice == texts['back']:
+			del_category(m)
+		elif user_choice in category_list:
 			api.Api(m.chat.id).del_category(chosen_type[0], user_choice)
 			success_text(m)
 			menu(m)
-		elif user_choice == texts['back']:
-			del_category(m)
 		else:
 			bot.send_message(m.chat.id, 'Нет такой категории')
 			ask_for_category_name(m)
-
 
 	def cat_type_cb(m, user_choice):
 		if user_choice in types_to_choose.keys():
@@ -210,18 +211,17 @@ def del_category(m):
 			del_category(m)
 
 	def ask_for_category_name(m):
-		category_list.append(*api.Api(m.chat.id).get_category_list(chosen_type[0]))
+		categories_from_db = api.Api(m.chat.id).get_category_list(chosen_type[0])
+		for cat in categories_from_db:
+			category_list.append(cat)
+
 		get_text(m, cat_name_cb,
 		         title='Как называется категория?',
 		         options=category_list + [texts['back']])
 
-
 	get_text(m, cat_type_cb,
 	         title='Категория чего?',
 	         options=list(types_to_choose.keys()) + [texts['back']])
-
-
-
 
 
 bot.polling()
