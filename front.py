@@ -15,16 +15,20 @@ texts = {
 	'expense': 'Расход'
 }
 
-def make_kb(options:list = None):
+
+def make_kb(options: list = None, row_width=1):
 	if options and len(options):
-		kb = ReplyKeyboardMarkup(True, True, row_width=1)
+		kb = ReplyKeyboardMarkup(True, True, row_width=row_width)
 		kb.add(*options)
 	else:
 		kb = None
 	return kb
 
-def get_text(m, callback, title = texts['default arrow'], options: list = None ):
+
+def get_text(m, callback, title=texts['default arrow'], options: list = None,
+             keyboard_row_width=1):
 	"""
+	:param keyboard_row_width:
 	:param m: message: key to a chat/user
 	:param callback: will be called after user puts in a name: callback(m, name)
 	:param title: text to send to ask for a reply
@@ -35,10 +39,12 @@ def get_text(m, callback, title = texts['default arrow'], options: list = None )
 	def handler(m):
 		callback(m, m.text)
 
-	bot.send_message(m.chat.id, title, reply_markup=make_kb(options))
+	bot.send_message(m.chat.id, title,
+	                 reply_markup=make_kb(options, keyboard_row_width))
 	bot.register_next_step_handler(m, handler)
 
-def get_num(m, callback, title = texts['default arrow'], options: list = None):
+
+def get_num(m, callback, title=texts['default arrow'], options: list = None):
 	"""
 	:param m: message: key to a chat/user
 	:param callback: will be called after user puts in a name: callback(m, name)
@@ -57,8 +63,10 @@ def get_num(m, callback, title = texts['default arrow'], options: list = None):
 	bot.send_message(m.chat.id, title, reply_markup=make_kb(options))
 	bot.register_next_step_handler(m, handler)
 
+
 def success_text(m):
 	bot.send_message(m.chat.id, texts['success'])
+
 
 @bot.message_handler(commands=['start'])
 def start(m):
@@ -70,6 +78,7 @@ def start(m):
 		except psycopg2.errors.UniqueViolation:
 			pass
 	menu(m)
+
 
 @bot.message_handler(func=lambda m: m.text == texts['menu'])
 def menu(m):
@@ -89,6 +98,7 @@ def menu(m):
 		commands.get(m.text, menu)(m)
 
 	bot.register_next_step_handler(m, handler)
+
 
 def add_operation(type_, m):
 	"""
@@ -112,26 +122,30 @@ def add_operation(type_, m):
 			chosen_category.append(user_choice)
 			get_num(m, total_cb, 'Сумма')
 
-	get_text(m, callback=name_cb, title='Категория:', options=categories + [texts['back']])
+	get_text(m, callback=name_cb, title='Категория:',
+	         options=categories + [texts['back']], keyboard_row_width=2)
+
 
 @bot.message_handler(func=lambda m: m.text == texts['income'])
 def add_income(m):
 	add_operation(True, m)
 
+
 @bot.message_handler(func=lambda m: m.text == texts['expense'])
 def add_expense(m):
 	add_operation(False, m)
 
+
 def show_categories(m):
 	bot.send_message(
 		m.chat.id,
-		text='<b>Доходов:</b>\n\n'+
+		text='<b>Доходов:</b>\n\n' +
 		     '\n'.join(api.Api(m.chat.id).get_category_list(True)),
 		parse_mode='html'
 	)
 	bot.send_message(
 		m.chat.id,
-		text='<b>Расходов:</b>\n\n'+
+		text='<b>Расходов:</b>\n\n' +
 		     '\n'.join(api.Api(m.chat.id).get_category_list(False)),
 		parse_mode='html'
 	)
@@ -148,6 +162,7 @@ def show_categories(m):
 
 	bot.send_message(m.chat.id, texts['default arrow'], reply_markup=kb)
 	bot.register_next_step_handler(m, handler)
+
 
 def add_category(m):
 	types_to_choose = {
@@ -176,13 +191,12 @@ def add_category(m):
 		else:
 			add_category(m)
 
-
 	get_text(m, cat_type_cb,
 	         title='Категория чего?',
 	         options=list(types_to_choose.keys()) + [texts['back']])
 
-def del_category(m):
 
+def del_category(m):
 	types_to_choose = {
 		'Доходов': True,
 		'Расходов': False
@@ -211,7 +225,8 @@ def del_category(m):
 			del_category(m)
 
 	def ask_for_category_name(m):
-		categories_from_db = api.Api(m.chat.id).get_category_list(chosen_type[0])
+		categories_from_db = api.Api(m.chat.id).get_category_list(
+			chosen_type[0])
 		for cat in categories_from_db:
 			category_list.append(cat)
 
