@@ -3,13 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="3e1ba9d2-15e3-44c5-a7b1-fb2b3630f13b" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/front.py" beforeDir="false" afterPath="$PROJECT_DIR$/front.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/bin/chardetect" beforeDir="false" afterPath="$PROJECT_DIR$/venv/bin/chardetect" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/bin/easy_install" beforeDir="false" afterPath="$PROJECT_DIR$/venv/bin/easy_install" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/bin/pip" beforeDir="false" afterPath="$PROJECT_DIR$/venv/bin/pip" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/bin/pip3" beforeDir="false" afterPath="$PROJECT_DIR$/venv/bin/pip3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/pipenv-proper-names.txt" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -84,6 +77,7 @@
   <component name="ProjectId" id="1Vd1VJnCie51cefGffEIsUIv327" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="DatabaseDriversLRU" value="postgresql" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -150,7 +144,7 @@
       <updated>1577568179548</updated>
       <workItem from="1577568184102" duration="7946000" />
       <workItem from="1577620086949" duration="4087000" />
-      <workItem from="1577718347599" duration="13887000" />
+      <workItem from="1577718347599" duration="14404000" />
     </task>
     <servers />
   </component>
