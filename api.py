@@ -38,10 +38,61 @@ class Api:
 				'where category.user_id = %(user_id)s '
 				'and category.type = %(type)s '
 				'and category.name = %(category)s))',
-				{'type': type_, 'total': total, 'user_id': self.chat_id, 'category': category})
+				{'type': type_, 'total': total, 'user_id': self.chat_id,
+				 'category': category})
 			curs.execute(
-				f'update usr set balance = balance {operator} %s where id = %s', [total, self.chat_id]
+				f'update usr set balance = balance {operator} %s where id = %s',
+				[total, self.chat_id]
 			)
+
+	def __get_operations(self, type_, category=None, how_many=10):
+		with sqhelp.Connection() as curs:
+			if category:
+				query = curs.mogrify(
+					f'''
+					select op.total, 
+					to_char(op.date :: date, 'DD.MM'), 
+					to_char(op.time :: time, 'HH24:MI' ) 
+					from operation op inner join category cat on op.category_id = cat.id
+					where op.type = %(type)s
+						and op.user_id = %(user_id)s
+						and cat.name = %(category)s 
+					order by date desc, time desc    
+					limit {how_many} 
+					''',
+					{'type': type_, 'user_id': self.chat_id, 'category': category}
+				)
+			else:
+				query = curs.mogrify(
+					f'''
+					select op.total,
+	                to_char(op.date :: date, 'DD.MM'), 
+					to_char(op.time :: time, 'HH24:MI'), 
+					cat.name  
+					from operation op inner join category cat on op.category_id = cat.id
+					where op.type = %(type)s
+						and op.user_id = %(user_id)s
+					order by date desc, time desc    
+					limit {how_many} 
+					''',
+					{'type': type_, 'user_id': self.chat_id}
+				)
+			curs.execute(query)
+			fetch = curs.fetchall()
+			return fetch
+
+	def get_operations(self, type_, category=None, how_many=10):
+		fetch = self.__get_operations(type_, category, how_many)
+		row_str = f'<b>Последние {how_many}</b>\n'
+		if category:
+			for row in fetch:
+				row_str += f'\n<b>{row[0]}₽</b> {row[1]} {row[2]}'
+		else:
+			for row in fetch:
+				row_str += f'\n<b>{row[0]}₽</b> {row[1]} {row[2]} — {row[3]}'
+		return row_str
+
+
 
 	def add_category(self, type_, name):
 		"""
@@ -53,9 +104,9 @@ class Api:
 			query = curs.mogrify(
 				"insert into category (name, type, user_id) values (%s, %s, %s)",
 				[name, type_, self.chat_id]
-				)
+			)
 			curs.execute(query)
-			# print(query)
+		# print(query)
 
 	def del_category(self, type_, name):
 		"""

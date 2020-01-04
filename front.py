@@ -12,7 +12,9 @@ texts = {
 	'success': 'Готово ✓',
 	'default arrow': '↘️',
 	'income': 'Доход',
-	'expense': 'Расход'
+	'expense': 'Расход',
+	'categories': 'Мои категории',
+	'operations': 'Мои операции'
 }
 
 
@@ -44,7 +46,7 @@ def get_text(m, callback, title=texts['default arrow'], options: list = None,
 	bot.register_next_step_handler(m, handler)
 
 
-def get_num(m, callback, title=texts['default arrow'], options: list = None):
+def get_num(m, callback, title=texts['default arrow'], options = None):
 	"""
 	:param m: message: key to a chat/user
 	:param callback: will be called after user puts in a name: callback(m, name)
@@ -57,8 +59,8 @@ def get_num(m, callback, title=texts['default arrow'], options: list = None):
 		if m.text.isdigit():
 			callback(m, m.text)
 		else:
-			bot.send_message(m.chat.id, 'Только цифры')
-			get_sum(m, callback, options)
+			bot.send_message(m.chat.id, '⚠️ Я пойму только цифры')
+			get_num(m, callback, title, options)
 
 	bot.send_message(m.chat.id, title, reply_markup=make_kb(options))
 	bot.register_next_step_handler(m, handler)
@@ -84,13 +86,14 @@ def start(m):
 def menu(m):
 	commands = {
 		# user_text: function
-		'Доход': add_income,
-		'Расход': add_expense,
-		'Мои категории': show_categories,
+		'+ Доход': add_income,
+		'+ Расход': add_expense,
+		texts['operations']: show_operations,
+		texts['categories']: show_categories,
 	}
-	kb = ReplyKeyboardMarkup(True, True, row_width=1)
-	kb.add(*commands.keys())
-	text = 'Баланс: ' + str(api.Api(m.chat.id).get_balance())
+	kb = make_kb(options=list(commands.keys()), row_width=2)
+	balance = api.Api(m.chat.id).get_balance()
+	text = f'💰 {balance}₽'
 	bot.send_message(m.chat.id, text, reply_markup=kb)
 
 	def handler(m):
@@ -98,6 +101,40 @@ def menu(m):
 		commands.get(m.text, menu)(m)
 
 	bot.register_next_step_handler(m, handler)
+
+
+def show_operations(m):
+	types = {
+		'Доходы': True,
+		'Расходы': False,
+	}
+	chosen_type = []
+
+	def how_many_cb(m, how_many):
+		bot.send_message(
+			m.chat.id,
+			parse_mode='html',
+			text = api.Api(m.chat.id).get_operations(
+				chosen_type[0],
+				how_many=how_many
+			)
+		)
+		menu(m)
+
+	def type_cb(m, type_):
+		if type_ == texts['back']:
+			menu(m)
+		elif type_ in types.keys():
+			chosen_type.append(types[type_])
+			ask_how_many_operations(m)
+		else:
+			show_operations(m)
+
+	def ask_how_many_operations(m):
+		get_num(m, how_many_cb, title='Сколько операций показать?')
+
+	get_text(m, type_cb, options=list(types.keys()) + [texts['back']],
+	         keyboard_row_width=2)
 
 
 def add_operation(type_, m):
@@ -136,6 +173,7 @@ def add_expense(m):
 	add_operation(False, m)
 
 
+@bot.message_handler(func=lambda m: m.text == texts['categories'])
 def show_categories(m):
 	bot.send_message(
 		m.chat.id,
