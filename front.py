@@ -277,4 +277,4 @@ def del_category(m):
 	         options=list(types_to_choose.keys()) + [texts['back']])
 
 
-bot.polling()
+bot.polling(none_stop=True)
