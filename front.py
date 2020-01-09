@@ -77,6 +77,7 @@ def set_balance(m):
 		api.Api(m.chat.id).set_balance(total)
 		success_text(m)
 		menu(m)
+
 	get_num(m, cb, 'Укажите ваш текущий баланс:')
 
 
@@ -89,8 +90,8 @@ def start(m):
 			curs.execute("insert into usr (id) values (%s)", [chat_id])
 			set_balance(m)
 		except psycopg2.errors.UniqueViolation:
-			pass
-	menu(m)
+			menu(m)
+
 
 
 @bot.message_handler(func=lambda m: m.text == texts['menu'])
