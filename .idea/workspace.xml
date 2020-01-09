@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="3e1ba9d2-15e3-44c5-a7b1-fb2b3630f13b" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/front.py" beforeDir="false" afterPath="$PROJECT_DIR$/front.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -85,7 +86,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="editing.templates" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -195,7 +196,9 @@
       <workItem from="1577620086949" duration="4087000" />
       <workItem from="1577718347599" duration="14404000" />
       <workItem from="1578086214350" duration="7543000" />
-      <workItem from="1578321658029" duration="23000" />
+      <workItem from="1578321658029" duration="639000" />
+      <workItem from="1578347137582" duration="7000" />
+      <workItem from="1578609165171" duration="670000" />
     </task>
     <servers />
   </component>

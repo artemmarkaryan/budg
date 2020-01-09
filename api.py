@@ -5,6 +5,12 @@ class Api:
 	def __init__(self, chat_id):
 		self.chat_id = chat_id
 
+	def set_balance(self, total):
+		with sqhelp.Connection() as curs:
+			curs.execute('update usr set balance = %s where id = %s',
+			             [total, self.chat_id])
+
+
 	def get_balance(self):
 		with sqhelp.Connection() as curs:
 			curs.execute('select balance from usr where id = %s',

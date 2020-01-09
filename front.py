@@ -14,7 +14,9 @@ texts = {
 	'income': 'Доход',
 	'expense': 'Расход',
 	'categories': 'Мои категории',
-	'operations': 'Мои операции'
+	'operations': 'Мои операции',
+	'settings': 'Настройки',
+	'set_balance': 'Установить баланс'
 }
 
 
@@ -70,6 +72,13 @@ def success_text(m):
 	bot.send_message(m.chat.id, texts['success'])
 
 
+def set_balance(m):
+	def cb(m, total):
+		api.Api(m.chat.id).set_balance(total)
+		success_text(m)
+	get_num(m, cb, 'Укажите ваш текущий баланс:')
+
+
 @bot.message_handler(commands=['start'])
 def start(m):
 	chat_id: int = m.chat.id
@@ -77,6 +86,7 @@ def start(m):
 		# 	curs.execute("select chat_id from \"user\" where chat_id = %d", [chat_id])
 		try:
 			curs.execute("insert into usr (id) values (%s)", [chat_id])
+			set_balance(m)
 		except psycopg2.errors.UniqueViolation:
 			pass
 	menu(m)
@@ -90,6 +100,7 @@ def menu(m):
 		'+ Расход': add_expense,
 		texts['operations']: show_operations,
 		texts['categories']: show_categories,
+		texts['settings']: settings
 	}
 	kb = make_kb(options=list(commands.keys()), row_width=2)
 	balance = api.Api(m.chat.id).get_balance()
@@ -163,12 +174,12 @@ def add_operation(type_, m):
 	         options=categories + [texts['back']], keyboard_row_width=2)
 
 
-@bot.message_handler(func=lambda m: m.text == texts['income'])
+@bot.message_handler()
 def add_income(m):
 	add_operation(True, m)
 
 
-@bot.message_handler(func=lambda m: m.text == texts['expense'])
+@bot.message_handler()
 def add_expense(m):
 	add_operation(False, m)
 
@@ -276,5 +287,15 @@ def del_category(m):
 	         title='Категория чего?',
 	         options=list(types_to_choose.keys()) + [texts['back']])
 
+@bot.message_handler(func=lambda m: m.text == texts['settings'])
+def settings(m):
+	commands = {
+		texts['set_balance']: set_balance,
+		texts['back']: menu
+	}
+	def cb(m, text):
+		commands.get(text, settings)(m)
+
+	get_text(m, cb, options=list(commands.keys()))
 
 bot.polling(none_stop=True)
