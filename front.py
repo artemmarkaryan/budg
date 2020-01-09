@@ -76,6 +76,7 @@ def set_balance(m):
 	def cb(m, total):
 		api.Api(m.chat.id).set_balance(total)
 		success_text(m)
+		menu(m)
 	get_num(m, cb, 'Укажите ваш текущий баланс:')
 
 
@@ -155,6 +156,7 @@ def add_operation(type_, m):
 	:return:
 	"""
 	categories = api.Api(m.chat.id).get_category_list(type_)
+
 	chosen_category = []
 
 	def total_cb(m, total):
@@ -170,8 +172,12 @@ def add_operation(type_, m):
 			chosen_category.append(user_choice)
 			get_num(m, total_cb, 'Сумма')
 
-	get_text(m, callback=name_cb, title='Категория:',
-	         options=categories + [texts['back']], keyboard_row_width=2)
+	if len(categories) == 0:
+		bot.send_message(m.chat.id, 'Сначала нужно добавить категорию')
+		show_categories(m)
+	else:
+		get_text(m, callback=name_cb, title='Категория:',
+		         options=categories + [texts['back']], keyboard_row_width=2)
 
 
 @bot.message_handler()
